@@ -13,8 +13,8 @@ main proc
     mov ds, ax
 
     ; Print "Enter a string:"
-    mov dx, offset msg1
-    mov ah, 09h
+    lea dx, msg1
+    mov ah, 9
     int 21h
 
     ; Take string input
