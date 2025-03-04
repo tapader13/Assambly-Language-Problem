@@ -78,3 +78,115 @@ ExitProgram:
 
 MAIN ENDP
 END MAIN
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+; Prime Number Testing Program (Single Digit Input) - 8086 Assembly
+
+.MODEL SMALL
+.STACK 100H
+
+.DATA
+    prompt DB 'Enter a single digit (0-9): ', '$'
+    prime_msg DB ' is a prime number.', 0DH, 0AH, '$'
+    not_prime_msg DB ' is not a prime number.', 0DH, 0AH, '$'
+    invalid_msg DB 'Invalid input.', 0DH, 0AH, '$'
+    num DB ?
+
+.CODE
+MAIN PROC
+    MOV AX, @DATA
+    MOV DS, AX
+
+    ; Display prompt
+    MOV AH, 09H
+    LEA DX, prompt
+    INT 21H
+
+    ; Read input character
+    MOV AH, 01H
+    INT 21H
+
+    ; Check for valid input (0-9)
+    CMP AL, '0'
+    JL invalid
+    CMP AL, '9'
+    JG invalid
+
+    ; Convert ASCII to number
+    SUB AL, '0'
+    MOV num, AL
+
+    ; Special cases 0 and 1
+    CMP AL, 0
+    JE not_prime
+    CMP AL, 1
+    JE not_prime
+
+    ; Start prime check
+    MOV BL, 2
+    MOV AL, num ; load the number to al
+    CMP BL, AL
+    JGE prime
+
+check_loop:
+    MOV AH, 0
+    DIV BL
+    CMP AH, 0
+    JE not_prime
+
+    INC BL
+    MOV AL, num ; reload the number to al
+    CMP BL, AL
+    JL check_loop
+
+prime:
+    ; Display number
+    MOV DL, num
+    ADD DL, '0'
+    MOV AH, 02H
+    INT 21H
+
+    ; Display prime message
+    MOV AH, 09H
+    LEA DX, prime_msg
+    INT 21H
+    JMP exit
+
+not_prime:
+    ; Display number
+    MOV DL, num
+    ADD DL, '0'
+    MOV AH, 02H
+    INT 21H
+
+    ; Display not prime message
+    MOV AH, 09H
+    LEA DX, not_prime_msg
+    INT 21H
+    JMP exit
+
+invalid:
+    ; Display invalid input message
+    MOV AH, 09H
+    LEA DX, invalid_msg
+    INT 21H
+
+exit:
+    ; Exit program
+    MOV AH, 4CH
+    INT 21H
+
+MAIN ENDP
+END MAIN
