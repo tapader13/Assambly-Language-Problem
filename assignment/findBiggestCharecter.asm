@@ -1,0 +1,87 @@
+.MODEL SMALL
+.STACK 100H
+
+.DATA
+    MSG1 DB "Enter the first character: $"
+    MSG2 DB "Enter the second character: $"
+    MSG3 DB "The bigger character is: $"
+    NEWLINE DB 13, 10, "$"
+    INPUT_CHAR1 DB ?
+    INPUT_CHAR2 DB ?
+
+.CODE
+MAIN PROC
+    MOV AX, @DATA
+    MOV DS, AX
+
+    LEA DX, MSG1
+    MOV AH, 9
+    INT 21H
+
+    CALL GET_CHAR
+    MOV INPUT_CHAR1, AL
+
+    LEA DX, NEWLINE
+    MOV AH, 9
+    INT 21H
+
+    LEA DX, MSG2
+    MOV AH, 9
+    INT 21H
+
+    CALL GET_CHAR
+    MOV INPUT_CHAR2, AL
+
+    LEA DX, NEWLINE
+    MOV AH, 9
+    INT 21H
+
+    MOV AL, INPUT_CHAR1
+    MOV BL, INPUT_CHAR2
+    CMP AL, BL
+    JL SECOND_BIGGER
+    JG FIRST_BIGGER
+
+    LEA DX, MSG3
+    MOV AH, 9
+    INT 21H
+    MOV DL, AL
+    MOV AH, 2
+    INT 21H
+    JMP END_PROGRAM
+
+FIRST_BIGGER:
+    LEA DX, MSG3
+    MOV AH, 9
+    INT 21H
+    MOV DL, INPUT_CHAR1
+    MOV AH, 2
+    INT 21H
+    JMP END_PROGRAM
+
+SECOND_BIGGER:
+    LEA DX, MSG3
+    MOV AH, 9
+    INT 21H
+    MOV DL, INPUT_CHAR2
+    MOV AH, 2
+    INT 21H
+
+END_PROGRAM:
+    MOV AH, 4CH
+    INT 21H
+
+MAIN ENDP
+
+GET_CHAR PROC
+    GET_CHAR_LOOP:
+        MOV AH, 1
+        INT 21H
+        CMP AL, 13
+        JE GET_CHAR_LOOP
+        CMP AL, 10
+        JE GET_CHAR_LOOP
+        RET
+GET_CHAR ENDP
+
+END MAIN
